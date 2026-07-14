@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'About' }} - Smart Bangladesh{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 0 auto;">
+    <h1 style="color: var(--primary); margin-bottom: 2rem;">About Smart Bangladesh</h1>
+    
+    <div style="background-color: white; padding: 2rem; border-radius: 8px; box-shadow: var(--shadow);">
+        <h2 style="color: var(--primary); margin: 1rem 0;">Our Mission</h2>
+        <p>Smart Bangladesh is a digital platform designed to provide seamless access to government services for citizens. We aim to modernize bureaucratic processes and make public services more accessible, transparent, and efficient.</p>
+
+        <h2 style="color: var(--primary); margin: 1rem 0;">Our Vision</h2>
+        <p>To create a digital Bangladesh where citizens can access government services with ease, transparency, and efficiency from anywhere, anytime.</p>
+
+        <h2 style="color: var(--primary); margin: 1rem 0;">Services Offered</h2>
+        <ul style="margin-left: 2rem; line-height: 2;">
+            <li>Birth Certificate Registration</li>
+            <li>Death Certificate Registration</li>
+            <li>Family Certificate Services</li>
+            <li>Police Clearance Certificates</li>
+            <li>Healthcare Appointments</li>
+            <li>Trade License Applications</li>
+            <li>Blood Donation Services</li>
+            <li>Building Permits</li>
+            <li>Complaint Management</li>
+        </ul>
+
+        <h2 style="color: var(--primary); margin: 1rem 0;">Contact Information</h2>
+        <p>
+            <strong>Email:</strong> info@smartbangladesh.gov.bd<br>
+            <strong>Phone:</strong> +880-2-XXXX-XXXX<br>
+            <strong>Office:</strong> Dhaka, Bangladesh
+        </p>
+    </div>
+</div>
+{% endblock %}

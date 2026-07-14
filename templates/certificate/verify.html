@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Certificate Verification - Smart Bangladesh{% endblock %}
+
+{% block content %}
+<div style="max-width: 700px; margin: 3rem auto; padding: 0 1.5rem;">
+    {% if verified %}
+        <!-- Verified State Card -->
+        <div style="background-color: var(--white); border-radius: 8px; box-shadow: var(--shadow-lg); border-top: 6px solid var(--success); overflow: hidden; padding: 2.5rem; text-align: center;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">✅</div>
+            <h1 style="color: var(--success); font-weight: 800; font-size: 2rem; margin-bottom: 0.5rem; letter-spacing: 0.5px;">CERTIFICATE VERIFIED</h1>
+            <p style="color: #666; font-size: 1.1rem; margin-bottom: 2rem;">This certificate is authentic and officially registered with the Government of Bangladesh.</p>
+            
+            <div style="border-top: 1px solid var(--border); padding-top: 2rem; text-align: left; max-width: 500px; margin: 0 auto; display: grid; grid-template-columns: 180px 1fr; gap: 1rem 0.5rem;">
+                <div style="font-weight: 700; color: var(--primary);">Certificate ID:</div>
+                <div style="font-family: monospace; font-weight: bold; font-size: 1.1rem; color: #333;">{{ cert_id }}</div>
+                
+                <div style="font-weight: 700; color: var(--primary);">Document Type:</div>
+                <div>{{ application.service_type.replace('_', ' ').title() }}</div>
+                
+                <div style="font-weight: 700; color: var(--primary);">Holder Name:</div>
+                <div style="font-weight: 600; color: #333;">{{ user.name }}</div>
+                
+                <div style="font-weight: 700; color: var(--primary);">NID Number:</div>
+                <div>{{ user.nid or 'N/A' }}</div>
+                
+                <div style="font-weight: 700; color: var(--primary);">Date of Issue:</div>
+                <div>
+                    {{ application.updated_at.strftime('%d %B %Y') if application.updated_at else application.created_at.strftime('%d %B %Y') if application.created_at else 'N/A' }}
+                </div>
+                
+                <div style="font-weight: 700; color: var(--primary);">Issuer Authority:</div>
+                <div>Smart Bangladesh Digital Services Bureau</div>
+            </div>
+            
+            <div style="margin-top: 2.5rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+                <p style="font-size: 0.9rem; color: #888;">
+                    Verified timestamp: {{ datetime.now().strftime('%d %b %Y, %I:%M %p') if datetime else 'Current Local Time' }}
+                </p>
+            </div>
+        </div>
+    {% else %}
+        <!-- Failed State Card -->
+        <div style="background-color: var(--white); border-radius: 8px; box-shadow: var(--shadow-lg); border-top: 6px solid var(--danger); overflow: hidden; padding: 2.5rem; text-align: center;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">❌</div>
+            <h1 style="color: var(--danger); font-weight: 800; font-size: 2rem; margin-bottom: 0.5rem; letter-spacing: 0.5px;">VERIFICATION FAILED</h1>
+            <p style="color: #666; font-size: 1.1rem; margin-bottom: 2rem;">The serial number could not be found or verified in our digital registry.</p>
+            
+            <div style="background-color: #fff5f5; border: 1px solid #fed7d7; border-radius: 6px; padding: 1.5rem; max-width: 500px; margin: 0 auto; text-align: left;">
+                <p style="font-weight: bold; color: var(--danger); margin-bottom: 0.5rem;">Provided Serial: <span style="font-family: monospace;">{{ cert_id }}</span></p>
+                <p style="font-size: 0.95rem; color: #555; line-height: 1.5;">
+                    This document code does not match any approved certificate in our database. It may be forged, cancelled, or still pending approval. Please contact the issuer bureau if this is an error.
+                </p>
+            </div>
+        </div>
+    {% endif %}
+    
+    <div style="text-align: center; margin-top: 2rem;">
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Go to Home Page</a>
+    </div>
+</div>
+{% endblock %}

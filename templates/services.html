@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Services - Smart Bangladesh{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto;">
+    <h1 style="color: var(--primary); margin-bottom: 2rem;">Our Services</h1>
+    
+    <div class="services-grid" style="margin-bottom: 3rem;">
+        <div class="service-card">
+            <div class="service-icon">📋</div>
+            <h3>Birth Certificate</h3>
+            <p>Apply for birth certificate online. Submit required documents and track your application status.</p>
+        </div>
+        <div class="service-card">
+            <div class="service-icon">📄</div>
+            <h3>Death Certificate</h3>
+            <p>Request death certificate with quick processing and home delivery options.</p>
+        </div>
+        <div class="service-card">
+            <div class="service-icon">👨‍👩‍👧</div>
+            <h3>Family Certificate</h3>
+            <p>Get family relationship certificates for administrative purposes.</p>
+        </div>
+        <div class="service-card">
+            <div class="service-icon">🚔</div>
+            <h3>Police Clearance</h3>
+            <p>Obtain police clearance certificate for employment, travel, or other purposes.</p>
+        </div>
+        <div class="service-card">
+            <div class="service-icon">🏥</div>
+            <h3>Healthcare Services</h3>
+            <p>Book hospital appointments and access medical services online.</p>
+        </div>
+        <div class="service-card">
+            <div class="service-icon">🏢</div>
+            <h3>Trade License</h3>
+            <p>Apply for trade license to start your business legally.</p>
+        </div>
+        <div class="service-card">
+            <div class="service-icon">🏗️</div>
+            <h3>Building Permit</h3>
+            <p>Get approval for construction projects with verified documentation.</p>
+        </div>
+        <div class="service-card">
+            <div class="service-icon">🩸</div>
+            <h3>Blood Donation</h3>
+            <p>Request blood donation and find nearby blood banks.</p>
+        </div>
+        <div class="service-card">
+            <div class="service-icon">📞</div>
+            <h3>Support & Complaints</h3>
+            <p>File complaints and get support from government departments.</p>
+        </div>
+    </div>
+
+    {% if not user_id %}
+    <div style="background-color: white; padding: 2rem; border-radius: 8px; box-shadow: var(--shadow); text-align: center;">
+        <h2 style="color: var(--primary); margin-bottom: 1rem;">Ready to Get Started?</h2>
+        <p style="margin-bottom: 1.5rem;">Login or register now to access all services</p>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-large" style="margin-right: 1rem;">Login</a>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-outline btn-large">Register</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

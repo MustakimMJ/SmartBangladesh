@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Apply for Police Clearance - Smart Bangladesh{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <h3>Navigation</h3>
+            <ul>
+                <li><a href="{{ url_for('citizen.dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('citizen.applications') }}">My Applications</a></li>
+                <li><a href="{{ url_for('citizen.apply_service', service_type='birth_certificate') }}">Birth Certificate</a></li>
+                <li><a href="{{ url_for('citizen.apply_service', service_type='death_certificate') }}">Death Certificate</a></li>
+                <li><a href="{{ url_for('citizen.apply_service', service_type='family_certificate') }}">Family Certificate</a></li>
+                <li><a href="{{ url_for('citizen.apply_service', service_type='police_clearance') }}" class="active">Police Clearance</a></li>
+                <li><a href="{{ url_for('auth.profile') }}">Profile</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="dashboard-content">
+        <h1>Apply for Police Clearance</h1>
+
+        <div class="recent-section">
+            {% if errors %}
+                <div class="error-box">
+                    {% for error in errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="POST" enctype="multipart/form-data" class="auth-form">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" value="{{ user.name }}" disabled style="background-color: #f0f0f0;">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" value="{{ user.email }}" disabled style="background-color: #f0f0f0;">
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Purpose / Reason for Request *</label>
+                    <textarea id="description" name="description" rows="5" required placeholder="State the purpose (e.g. employment abroad, visa, scholarship) and any relevant details"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="document">Upload Supporting Document (PDF, DOC, JPG, PNG)</label>
+                    <input type="file" id="document" name="document" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                    <small style="color: #666; margin-top: 0.5rem;">Maximum file size: 16MB</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Submit Application</button>
+                <a href="{{ url_for('citizen.applications') }}" class="btn btn-outline btn-block" style="margin-top: 0.5rem;">Cancel</a>
+            </form>
+        </div>
+    </main>
+</div>
+{% endblock %}

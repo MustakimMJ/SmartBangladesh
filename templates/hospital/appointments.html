@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Hospital Appointments - Smart Bangladesh{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <h3>Hospital</h3>
+            <ul>
+                <li><a href="{{ url_for('hospital.dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('hospital.appointments') }}" class="active">Appointments</a></li>
+                <li><a href="{{ url_for('auth.profile') }}">Profile</a></li>
+                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="dashboard-content">
+        <h1>Healthcare Appointments</h1>
+
+        <div class="recent-section">
+            {% if paginated.records %}
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Appointment ID</th>
+                            <th>Details</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in paginated.records %}
+                            <tr>
+                                <td>#{{ app.id }}</td>
+                                <td>{{ app.description[:50] }}...</td>
+                                <td><span class="badge badge-{{ app.status }}">{{ app.status.title() }}</span></td>
+                                <td>{{ app.created_at.strftime('%d %b %Y') if app.created_at else 'N/A' }}</td>
+                                <td><a href="{{ url_for('hospital.view_appointment', app_id=app.id) }}" class="btn btn-small">View</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="empty-state">No appointments</p>
+            {% endif %}
+        </div>
+    </main>
+</div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}My Applications - Smart Bangladesh{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <h3>Navigation</h3>
+            <ul>
+                <li><a href="{{ url_for('citizen.dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('citizen.applications') }}" class="active">My Applications</a></li>
+                <li><a href="{{ url_for('citizen.apply_service', service_type='birth_certificate') }}">Birth Certificate</a></li>
+                <li><a href="{{ url_for('citizen.apply_service', service_type='death_certificate') }}">Death Certificate</a></li>
+                <li><a href="{{ url_for('citizen.apply_service', service_type='family_certificate') }}">Family Certificate</a></li>
+                <li><a href="{{ url_for('citizen.apply_service', service_type='police_clearance') }}">Police Clearance</a></li>
+                <li><a href="{{ url_for('auth.profile') }}">Profile</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="dashboard-content">
+        <h1>My Applications</h1>
+
+        <div class="recent-section">
+            {% if paginated.records %}
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Application ID</th>
+                            <th>Service Type</th>
+                            <th>Status</th>
+                            <th>Submitted</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in paginated.records %}
+                            <tr>
+                                <td>#{{ app.id }}</td>
+                                <td>{{ app.service_type.replace('_', ' ').title() }}</td>
+                                <td><span class="badge badge-{{ app.status }}">{{ app.status.title() }}</span></td>
+                                <td>{{ app.created_at.strftime('%d %b %Y') if app.created_at else 'N/A' }}</td>
+                                <td>
+                                    <a href="{{ url_for('citizen.view_application', app_id=app.id) }}" class="btn btn-small btn-outline">View Details</a>
+                                    {% if app.status == 'approved' and app.service_type in ['birth_certificate', 'death_certificate', 'family_certificate', 'police_clearance'] %}
+                                        <a href="{{ url_for('certificate.view_certificate', app_id=app.id) }}" class="btn btn-small" style="margin-left: 0.25rem;">Certificate</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <!-- Pagination -->
+                {% if paginated.total_pages > 1 %}
+                    <div class="pagination" style="text-align: center; margin-top: 2rem;">
+                        {% if paginated.has_prev %}
+                            <a href="?page=1" class="btn btn-small">First</a>
+                            <a href="?page={{ paginated.prev_page }}" class="btn btn-small">Previous</a>
+                        {% endif %}
+
+                        <span style="padding: 0 1rem;">Page {{ paginated.current_page }} of {{ paginated.total_pages }}</span>
+
+                        {% if paginated.has_next %}
+                            <a href="?page={{ paginated.next_page }}" class="btn btn-small">Next</a>
+                            <a href="?page={{ paginated.total_pages }}" class="btn btn-small">Last</a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% else %}
+                <p class="empty-state">No applications yet. <a href="{{ url_for('citizen.apply_service', service_type='birth_certificate') }}">Start applying for a service</a></p>
+            {% endif %}
+        </div>
+    </main>
+</div>
+{% endblock %}

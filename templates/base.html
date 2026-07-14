@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Smart Bangladesh - Digital Services Platform{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>Smart Bangladesh</h1>
+                    <p class="tagline">Digital Services Platform</p>
+                </div>
+                
+                <nav class="nav-main">
+                    <ul>
+                        <li><a href="{{ url_for('index') }}">Home</a></li>
+                        <li><a href="{{ url_for('services') }}">Services</a></li>
+                        <li><a href="{{ url_for('about') }}">About</a></li>
+                        <li><a href="{{ url_for('contact') }}">Contact</a></li>
+                        {% if user_id %}
+                            <li class="user-menu">
+                                <a href="#" class="user-menu-btn">{{ user_name }}</a>
+                                <div class="user-dropdown">
+                                    <a href="{{ url_for('auth.profile') }}">Profile</a>
+                                    <a href="{{ url_for('auth.logout') }}">Logout</a>
+                                </div>
+                            </li>
+                        {% else %}
+                            <li><a href="{{ url_for('auth.login') }}" class="btn btn-primary">Login</a></li>
+                            <li><a href="{{ url_for('auth.register') }}" class="btn btn-outline">Register</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="messages-container">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            <span class="close-alert" onclick="this.parentElement.style.display='none';">&times;</span>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Main Content -->
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>About Smart Bangladesh</h4>
+                    <p>Providing digital government services to citizens of Bangladesh.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="{{ url_for('services') }}">Services</a></li>
+                        <li><a href="{{ url_for('about') }}">About Us</a></li>
+                        <li><a href="{{ url_for('contact') }}">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>Email: info@smartbangladesh.gov.bd</p>
+                    <p>Phone: +880-2-XXXX-XXXX</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Smart Bangladesh. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

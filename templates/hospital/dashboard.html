@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Hospital Dashboard - Smart Bangladesh{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <h3>Hospital Portal</h3>
+            <ul>
+                <li><a href="{{ url_for('hospital.dashboard') }}" class="active">Dashboard</a></li>
+                <li><a href="{{ url_for('hospital.appointments') }}">Appointments</a></li>
+                <li><a href="{{ url_for('auth.profile') }}">Profile</a></li>
+                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="dashboard-content">
+        <h1>Hospital Portal</h1>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_appointments }}</div>
+                <div class="stat-label">Total Appointments</div>
+            </div>
+            <div class="stat-card pending">
+                <div class="stat-number">{{ stats.pending }}</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card approved">
+                <div class="stat-number">{{ stats.completed }}</div>
+                <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat-card rejected">
+                <div class="stat-number">{{ stats.cancelled }}</div>
+                <div class="stat-label">Cancelled</div>
+            </div>
+        </div>
+
+        <section class="recent-section">
+            <h2>Recent Appointments</h2>
+            {% if recent_apps %}
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Patient</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in recent_apps %}
+                            <tr>
+                                <td>#{{ app.id }}</td>
+                                <td><span class="badge badge-{{ app.status }}">{{ app.status.title() }}</span></td>
+                                <td>{{ app.created_at.strftime('%d %b %Y') if app.created_at else 'N/A' }}</td>
+                                <td><a href="{{ url_for('hospital.view_appointment', app_id=app.id) }}" class="btn btn-small">View</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="empty-state">No appointments</p>
+            {% endif %}
+        </section>
+    </main>
+</div>
+{% endblock %}

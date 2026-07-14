@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Application Details - City Corporation{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <h3>City Corp Portal</h3>
+            <ul>
+                <li><a href="{{ url_for('city_corp.dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('city_corp.applications') }}" class="active">Applications</a></li>
+                <li><a href="{{ url_for('auth.profile') }}">Profile</a></li>
+                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="dashboard-content">
+        <h1>Application Details #{{ application.id }}</h1>
+
+        <div class="recent-section" style="margin-bottom: 2rem;">
+            <h2 style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Application Info</h2>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                <div>
+                    <label style="font-weight: 600; color: var(--primary); display: block; margin-bottom: 0.25rem;">Application ID</label>
+                    <p>#{{ application.id }}</p>
+                </div>
+                <div>
+                    <label style="font-weight: 600; color: var(--primary); display: block; margin-bottom: 0.25rem;">Service Type</label>
+                    <p>{{ application.service_type.replace('_', ' ').title() }}</p>
+                </div>
+                <div>
+                    <label style="font-weight: 600; color: var(--primary); display: block; margin-bottom: 0.25rem;">Status</label>
+                    <p><span class="badge badge-{{ application.status }}">{{ application.status.replace('_', ' ').title() }}</span></p>
+                </div>
+                <div>
+                    <label style="font-weight: 600; color: var(--primary); display: block; margin-bottom: 0.25rem;">Submitted Date</label>
+                    <p>{{ application.created_at.strftime('%d %b %Y, %I:%M %p') if application.created_at else 'N/A' }}</p>
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <label style="font-weight: 600; color: var(--primary); display: block; margin-bottom: 0.25rem;">Request Details / Business Description</label>
+                    <p style="background: var(--light); padding: 1rem; border-radius: 4px; border: 1px solid var(--border);">{{ application.description }}</p>
+                </div>
+                {% if application.remarks %}
+                    <div style="grid-column: 1 / -1;">
+                        <label style="font-weight: 600; color: var(--primary); display: block; margin-bottom: 0.25rem;">Remarks / Information Requested</label>
+                        <p style="background: #fff3cd; color: #856404; padding: 1rem; border-radius: 4px; border: 1px solid #ffeeba;">{{ application.remarks }}</p>
+                    </div>
+                {% endif %}
+                {% if application.document_path %}
+                    <div style="grid-column: 1 / -1;">
+                        <label style="font-weight: 600; color: var(--primary); display: block; margin-bottom: 0.25rem;">Attached Supporting Document</label>
+                        <p>
+                            <a href="{{ url_for('static', filename='uploads/' + application.document_path) }}" class="btn btn-primary btn-small" target="_blank">View / Download Document</a>
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="recent-section" style="margin-bottom: 2rem;">
+            <h2 style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Applicant Profile</h2>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                <div>
+                    <label style="font-weight: 600; color: var(--primary); display: block; margin-bottom: 0.25rem;">Full Name</label>
+                    <p>{{ user.name }}</p>
+                </div>
+                <div>
+                    <label style="font-weight: 600; color: var(--primary); display: block; margin-bottom: 0.25rem;">Email Address</label>
+                    <p>{{ user.email }}</p>
+                </div>
+                <div>
+                    <label style="font-weight: 600; color: var(--primary); display: block; margin-bottom: 0.25rem;">Phone Number</label>
+                    <p>{{ user.phone or 'N/A' }}</p>
+                </div>
+                <div>
+                    <label style="font-weight: 600; color: var(--primary); display: block; margin-bottom: 0.25rem;">NID Number</label>
+                    <p>{{ user.nid or 'N/A' }}</p>
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <label style="font-weight: 600; color: var(--primary); display: block; margin-bottom: 0.25rem;">Address</label>
+                    <p>{{ user.address or 'N/A' }}</p>
+                </div>
+            </div>
+        </div>
+
+        {% if application.status not in ['approved', 'rejected'] %}
+            <div class="recent-section">
+                <h2 style="margin-bottom: 1.5rem; color: var(--primary);">Take Action</h2>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label for="remarks_textarea">Officer Remarks / Information Needed</label>
+                    <textarea id="remarks_textarea" class="form-control" rows="4" placeholder="Provide any details, remarks, or rejection reasons here..."></textarea>
+                </div>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <form method="POST" action="{{ url_for('city_corp.approve_application', app_id=application.id) }}" onsubmit="document.getElementById('approve_remarks').value = document.getElementById('remarks_textarea').value;">
+                        <input type="hidden" name="remarks" id="approve_remarks">
+                        <button type="submit" class="btn btn-primary" style="background-color: var(--success);">Approve Application</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('city_corp.reject_application', app_id=application.id) }}" onsubmit="document.getElementById('reject_remarks').value = document.getElementById('remarks_textarea').value;">
+                        <input type="hidden" name="remarks" id="reject_remarks">
+                        <button type="submit" class="btn btn-secondary" style="background-color: var(--danger);">Reject Application</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('city_corp.request_info', app_id=application.id) }}" onsubmit="document.getElementById('info_needed').value = document.getElementById('remarks_textarea').value;">
+                        <input type="hidden" name="info_needed" id="info_needed">
+                        <button type="submit" class="btn btn-outline" style="border-color: var(--warning); color: #856404;">Request Info</button>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
+
+        <div style="margin-top: 2rem;">
+            <a href="{{ url_for('city_corp.applications') }}" class="btn btn-outline">Back to Applications</a>
+        </div>
+    </main>
+</div>
+{% endblock %}

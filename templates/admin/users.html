@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}All Users - Smart Bangladesh{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <h3>Admin Panel</h3>
+            <ul>
+                <li><a href="{{ url_for('admin.dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('admin.users') }}" class="active">Users</a></li>
+                <li><a href="{{ url_for('admin.complaints') }}">Complaints</a></li>
+                <li><a href="{{ url_for('admin.audit_logs') }}">Audit Logs</a></li>
+                <li><a href="{{ url_for('auth.profile') }}">Profile</a></li>
+                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="dashboard-content">
+        <h1>User Management</h1>
+
+        <div class="recent-section">
+            {% if paginated.records %}
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Joined</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in paginated.records %}
+                            <tr>
+                                <td>{{ user.name }}</td>
+                                <td>{{ user.email }}</td>
+                                <td><span class="badge badge-info">{{ user.role.title() }}</span></td>
+                                <td><span class="badge {% if user.is_active %}badge-success{% else %}badge-danger{% endif %}">{% if user.is_active %}Active{% else %}Inactive{% endif %}</span></td>
+                                <td>{{ user.created_at.strftime('%d %b %Y') if user.created_at else 'N/A' }}</td>
+                                <td><a href="{{ url_for('admin.view_user', user_id=user.id) }}" class="btn btn-small">View</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="empty-state">No users found</p>
+            {% endif %}
+        </div>
+    </main>
+</div>
+{% endblock %}

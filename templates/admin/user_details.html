@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}User Details - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <h3>Admin Panel</h3>
+            <ul>
+                <li><a href="{{ url_for('admin.dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('admin.users') }}" class="active">Users</a></li>
+                <li><a href="{{ url_for('admin.complaints') }}">Complaints</a></li>
+                <li><a href="{{ url_for('admin.audit_logs') }}">Audit Logs</a></li>
+                <li><a href="{{ url_for('auth.profile') }}">Profile</a></li>
+                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="dashboard-content">
+        <h1>User Profile: {{ user.name }}</h1>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+            <!-- User Information Panel -->
+            <div class="recent-section" style="margin-bottom: 0;">
+                <h2 style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Account Information</h2>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                    <div>
+                        <label style="font-weight: 600; color: var(--primary); display: block;">User ID</label>
+                        <p>#{{ user.id }}</p>
+                    </div>
+                    <div>
+                        <label style="font-weight: 600; color: var(--primary); display: block;">Status</label>
+                        <p>
+                            <span class="badge {% if user.is_active %}badge-success{% else %}badge-danger{% endif %}">
+                                {% if user.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                        </p>
+                    </div>
+                    <div>
+                        <label style="font-weight: 600; color: var(--primary); display: block;">Full Name</label>
+                        <p>{{ user.name }}</p>
+                    </div>
+                    <div>
+                        <label style="font-weight: 600; color: var(--primary); display: block;">Email</label>
+                        <p>{{ user.email }}</p>
+                    </div>
+                    <div>
+                        <label style="font-weight: 600; color: var(--primary); display: block;">Phone</label>
+                        <p>{{ user.phone or 'N/A' }}</p>
+                    </div>
+                    <div>
+                        <label style="font-weight: 600; color: var(--primary); display: block;">Role</label>
+                        <p><span class="badge badge-info">{{ user.role.upper() }}</span></p>
+                    </div>
+                    <div>
+                        <label style="font-weight: 600; color: var(--primary); display: block;">NID</label>
+                        <p>{{ user.nid or 'N/A' }}</p>
+                    </div>
+                    <div>
+                        <label style="font-weight: 600; color: var(--primary); display: block;">Joined Date</label>
+                        <p>{{ user.created_at.strftime('%d %b %Y, %I:%M %p') if user.created_at else 'N/A' }}</p>
+                    </div>
+                    <div style="grid-column: 1 / -1;">
+                        <label style="font-weight: 600; color: var(--primary); display: block;">Address</label>
+                        <p>{{ user.address or 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Actions Panel (Superadmin Only) -->
+            {% if session.get('role') == 'superadmin' %}
+                <div class="recent-section" style="margin-bottom: 0;">
+                    <h2 style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Administrative Actions</h2>
+                    
+                    <!-- Edit User Form -->
+                    <details style="margin-bottom: 1rem; border: 1px solid var(--border); border-radius: 4px; padding: 0.75rem;">
+                        <summary style="font-weight: 600; cursor: pointer; color: var(--primary);">Edit User Details</summary>
+                        <form method="POST" action="{{ url_for('admin.edit_user', user_id=user.id) }}" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                            <div class="form-group">
+                                <label for="edit_name">Name</label>
+                                <input type="text" name="name" id="edit_name" value="{{ user.name }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit_email">Email</label>
+                                <input type="email" name="email" id="edit_email" value="{{ user.email }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit_phone">Phone</label>
+                                <input type="text" name="phone" id="edit_phone" value="{{ user.phone or '' }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="edit_role">Role</label>
+                                <select name="role" id="edit_role">
+                                    <option value="citizen" {% if user.role == 'citizen' %}selected{% endif %}>Citizen</option>
+                                    <option value="police" {% if user.role == 'police' %}selected{% endif %}>Police</option>
+                                    <option value="hospital" {% if user.role == 'hospital' %}selected{% endif %}>Hospital</option>
+                                    <option value="city_corp" {% if user.role == 'city_corp' %}selected{% endif %}>City Corp</option>
+                                    <option value="blood_bank" {% if user.role == 'blood_bank' %}selected{% endif %}>Blood Bank</option>
+                                    <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+                                    <option value="superadmin" {% if user.role == 'superadmin' %}selected{% endif %}>Superadmin</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-small">Save Changes</button>
+                        </form>
+                    </details>
+
+                    <!-- Reset Password Form -->
+                    <details style="margin-bottom: 1rem; border: 1px solid var(--border); border-radius: 4px; padding: 0.75rem;">
+                        <summary style="font-weight: 600; cursor: pointer; color: var(--primary);">Reset Password</summary>
+                        <form method="POST" action="{{ url_for('admin.reset_password', user_id=user.id) }}" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                            <div class="form-group">
+                                <label for="new_password">New Password</label>
+                                <input type="password" name="new_password" id="new_password" required minlength="6" placeholder="At least 6 characters">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-small">Reset Password</button>
+                        </form>
+                    </details>
+
+                    <!-- Deactivate User Account -->
+                    {% if user.is_active %}
+                        <div style="border: 1px solid var(--border); border-radius: 4px; padding: 0.75rem;">
+                            <h4 style="color: var(--danger); margin-bottom: 0.5rem; font-weight: 600;">Danger Zone</h4>
+                            <p style="font-size: 0.9rem; color: #666; margin-bottom: 0.75rem;">Deactivating this user will suspend their access to the platform.</p>
+                            <form method="POST" action="{{ url_for('admin.deactivate_user', user_id=user.id) }}">
+                                <button type="submit" class="btn btn-secondary" style="background-color: var(--danger);" onclick="return confirm('Are you sure you want to deactivate this user?');">Deactivate Account</button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Citizen Applications (Only shown for citizen role) -->
+        {% if user.role == 'citizen' %}
+            <div class="recent-section">
+                <h2>Service Applications Submitted by {{ user.name }}</h2>
+                {% if applications %}
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Application ID</th>
+                                <th>Service Type</th>
+                                <th>Status</th>
+                                <th>Submitted Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for app in applications %}
+                                <tr>
+                                    <td>#{{ app.id }}</td>
+                                    <td>{{ app.service_type.replace('_', ' ').title() }}</td>
+                                    <td><span class="badge badge-{{ app.status }}">{{ app.status.replace('_', ' ').title() }}</span></td>
+                                    <td>{{ app.created_at.strftime('%d %b %Y, %I:%M %p') if app.created_at else 'N/A' }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="empty-state">No service applications found for this citizen.</p>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <div style="margin-top: 2rem;">
+            <a href="{{ url_for('admin.users') }}" class="btn btn-outline">Back to Users List</a>
+        </div>
+    </main>
+</div>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Request Details - Blood Bank Portal{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <h3>Blood Bank Portal</h3>
+            <ul>
+                <li><a href="{{ url_for('blood_bank.dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('blood_bank.requests') }}" class="active">Blood Requests</a></li>
+                <li><a href="{{ url_for('auth.profile') }}">Profile</a></li>
+                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="dashboard-content">
+        <h1>Blood Request Details #{{ application.id }}</h1>
+
+        <div class="recent-section" style="margin-bottom: 2rem;">
+            <h2 style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Request Info</h2>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                <div>
+                    <label style="font-weight: 600; color: var(--primary); display: block; margin-bottom: 0.25rem;">Request ID</label>
+                    <p>#{{ application.id }}</p>
+                </div>
+                <div>
+                    <label style="font-weight: 600; color: var(--primary); display: block; margin-bottom: 0.25rem;">Service Type</label>
+                    <p>{{ application.service_type.replace('_', ' ').title() }}</p>
+                </div>
+                <div>
+                    <label style="font-weight: 600; color: var(--primary); display: block; margin-bottom: 0.25rem;">Status</label>
+                    <p><span class="badge badge-{{ application.status }}">{{ application.status.title() }}</span></p>
+                </div>
+                <div>
+                    <label style="font-weight: 600; color: var(--primary); display: block; margin-bottom: 0.25rem;">Submitted Date</label>
+                    <p>{{ application.created_at.strftime('%d %b %Y, %I:%M %p') if application.created_at else 'N/A' }}</p>
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <label style="font-weight: 600; color: var(--primary); display: block; margin-bottom: 0.25rem;">Blood Type & Details</label>
+                    <p style="background: var(--light); padding: 1rem; border-radius: 4px; border: 1px solid var(--border);">{{ application.description }}</p>
+                </div>
+                {% if application.remarks %}
+                    <div style="grid-column: 1 / -1;">
+                        <label style="font-weight: 600; color: var(--primary); display: block; margin-bottom: 0.25rem;">Remarks/Status Notes</label>
+                        <p style="background: #fff3cd; color: #856404; padding: 1rem; border-radius: 4px; border: 1px solid #ffeeba;">{{ application.remarks }}</p>
+                    </div>
+                {% endif %}
+                {% if application.document_path %}
+                    <div style="grid-column: 1 / -1;">
+                        <label style="font-weight: 600; color: var(--primary); display: block; margin-bottom: 0.25rem;">Attached Medical Request Document</label>
+                        <p>
+                            <a href="{{ url_for('static', filename='uploads/' + application.document_path) }}" class="btn btn-primary btn-small" target="_blank">View / Download Document</a>
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="recent-section" style="margin-bottom: 2rem;">
+            <h2 style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Requester Profile</h2>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                <div>
+                    <label style="font-weight: 600; color: var(--primary); display: block; margin-bottom: 0.25rem;">Full Name</label>
+                    <p>{{ user.name }}</p>
+                </div>
+                <div>
+                    <label style="font-weight: 600; color: var(--primary); display: block; margin-bottom: 0.25rem;">Email Address</label>
+                    <p>{{ user.email }}</p>
+                </div>
+                <div>
+                    <label style="font-weight: 600; color: var(--primary); display: block; margin-bottom: 0.25rem;">Phone Number</label>
+                    <p>{{ user.phone or 'N/A' }}</p>
+                </div>
+                <div>
+                    <label style="font-weight: 600; color: var(--primary); display: block; margin-bottom: 0.25rem;">NID Number</label>
+                    <p>{{ user.nid or 'N/A' }}</p>
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <label style="font-weight: 600; color: var(--primary); display: block; margin-bottom: 0.25rem;">Address</label>
+                    <p>{{ user.address or 'N/A' }}</p>
+                </div>
+            </div>
+        </div>
+
+        {% if application.status == 'pending' %}
+            <div class="recent-section">
+                <h2 style="margin-bottom: 1.5rem; color: var(--primary);">Take Action</h2>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label for="notes_textarea">Fulfillment Notes / Cancellation Reason</label>
+                    <textarea id="notes_textarea" class="form-control" rows="4" placeholder="Provide details regarding fulfillment or reasons for cancellation..."></textarea>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <form method="POST" action="{{ url_for('blood_bank.fulfill_request', app_id=application.id) }}" onsubmit="document.getElementById('fulfill_notes').value = document.getElementById('notes_textarea').value;">
+                        <input type="hidden" name="notes" id="fulfill_notes">
+                        <button type="submit" class="btn btn-primary" style="background-color: var(--success);">Fulfill Request</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('blood_bank.cancel_request', app_id=application.id) }}" onsubmit="document.getElementById('cancel_reason').value = document.getElementById('notes_textarea').value;">
+                        <input type="hidden" name="reason" id="cancel_reason">
+                        <button type="submit" class="btn btn-secondary" style="background-color: var(--danger);">Cancel Request</button>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
+
+        <div style="margin-top: 2rem;">
+            <a href="{{ url_for('blood_bank.requests') }}" class="btn btn-outline">Back to Blood Requests</a>
+        </div>
+    </main>
+</div>
+{% endblock %}

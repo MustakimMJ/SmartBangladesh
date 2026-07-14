@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Complaints - Smart Bangladesh{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <h3>Admin Panel</h3>
+            <ul>
+                <li><a href="{{ url_for('admin.dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('admin.users') }}">Users</a></li>
+                <li><a href="{{ url_for('admin.complaints') }}" class="active">Complaints</a></li>
+                <li><a href="{{ url_for('admin.audit_logs') }}">Audit Logs</a></li>
+                <li><a href="{{ url_for('auth.profile') }}">Profile</a></li>
+                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="dashboard-content">
+        <h1>Complaints Management</h1>
+
+        <div class="recent-section">
+            {% if paginated.records %}
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Priority</th>
+                            <th>Submitted</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for complaint in paginated.records %}
+                            <tr>
+                                <td>#{{ complaint.id }}</td>
+                                <td>{{ complaint.title }}</td>
+                                <td><span class="badge badge-{{ complaint.status }}">{{ complaint.status.title() }}</span></td>
+                                <td><span class="badge badge-{{ complaint.priority }}">{{ complaint.priority.title() }}</span></td>
+                                <td>{{ complaint.created_at.strftime('%d %b %Y') if complaint.created_at else 'N/A' }}</td>
+                                <td><a href="{{ url_for('admin.view_complaint', complaint_id=complaint.id) }}" class="btn btn-small">View</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="empty-state">No complaints</p>
+            {% endif %}
+        </div>
+    </main>
+</div>
+{% endblock %}

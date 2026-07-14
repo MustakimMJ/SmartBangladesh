@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Police Dashboard - Smart Bangladesh{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <h3>Police Portal</h3>
+            <ul>
+                <li><a href="{{ url_for('police.dashboard') }}" class="active">Dashboard</a></li>
+                <li><a href="{{ url_for('police.applications') }}">Clearance Applications</a></li>
+                <li><a href="{{ url_for('auth.profile') }}">Profile</a></li>
+                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="dashboard-content">
+        <h1>Police Clearance Portal</h1>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_applications }}</div>
+                <div class="stat-label">Total Applications</div>
+            </div>
+            <div class="stat-card pending">
+                <div class="stat-number">{{ stats.pending }}</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card approved">
+                <div class="stat-number">{{ stats.approved }}</div>
+                <div class="stat-label">Approved</div>
+            </div>
+            <div class="stat-card rejected">
+                <div class="stat-number">{{ stats.rejected }}</div>
+                <div class="stat-label">Rejected</div>
+            </div>
+        </div>
+
+        <section class="recent-section">
+            <h2>Recent Applications</h2>
+            {% if recent_apps %}
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Applicant</th>
+                            <th>Status</th>
+                            <th>Submitted</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in recent_apps %}
+                            <tr>
+                                <td>#{{ app.id }}</td>
+                                <td><span class="badge badge-{{ app.status }}">{{ app.status.title() }}</span></td>
+                                <td>{{ app.created_at.strftime('%d %b %Y') if app.created_at else 'N/A' }}</td>
+                                <td><a href="{{ url_for('police.view_application', app_id=app.id) }}" class="btn btn-small">View</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="empty-state">No applications</p>
+            {% endif %}
+        </section>
+    </main>
+</div>
+{% endblock %}

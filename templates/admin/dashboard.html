@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Smart Bangladesh{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <h3>Admin Panel</h3>
+            <ul>
+                <li><a href="{{ url_for('admin.dashboard') }}" class="active">Dashboard</a></li>
+                <li><a href="{{ url_for('admin.users') }}">Users</a></li>
+                <li><a href="{{ url_for('admin.complaints') }}">Complaints</a></li>
+                <li><a href="{{ url_for('admin.audit_logs') }}">Audit Logs</a></li>
+                <li><a href="{{ url_for('auth.profile') }}">Profile</a></li>
+                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="dashboard-content">
+        <h1>Admin Dashboard</h1>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_users }}</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.citizens }}</div>
+                <div class="stat-label">Citizens</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.staff }}</div>
+                <div class="stat-label">Staff Members</div>
+            </div>
+            <div class="stat-card pending">
+                <div class="stat-number">{{ stats.pending_applications }}</div>
+                <div class="stat-label">Pending Applications</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_applications }}</div>
+                <div class="stat-label">Total Applications</div>
+            </div>
+            <div class="stat-card pending">
+                <div class="stat-number">{{ stats.pending_complaints }}</div>
+                <div class="stat-label">Pending Complaints</div>
+            </div>
+        </div>
+
+        <section class="recent-section">
+            <h2>Recent Users</h2>
+            {% if recent_users %}
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Joined</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in recent_users %}
+                            <tr>
+                                <td>{{ user.name }}</td>
+                                <td>{{ user.email }}</td>
+                                <td><span class="badge badge-info">{{ user.role.title() }}</span></td>
+                                <td>{{ user.created_at.strftime('%d %b %Y') if user.created_at else 'N/A' }}</td>
+                                <td><a href="{{ url_for('admin.view_user', user_id=user.id) }}" class="btn btn-small">View</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="empty-state">No users registered yet</p>
+            {% endif %}
+        </section>
+
+        <section class="recent-section">
+            <h2>Quick Actions</h2>
+            <div class="actions-grid">
+                <a href="{{ url_for('admin.users') }}" class="action-btn">
+                    <span class="icon">👥</span>
+                    <span>Manage Users</span>
+                </a>
+                <a href="{{ url_for('admin.complaints') }}" class="action-btn">
+                    <span class="icon">⚠️</span>
+                    <span>View Complaints</span>
+                </a>
+                <a href="{{ url_for('admin.audit_logs') }}" class="action-btn">
+                    <span class="icon">📋</span>
+                    <span>Audit Logs</span>
+                </a>
+                <a href="{{ url_for('auth.profile') }}" class="action-btn">
+                    <span class="icon">🔧</span>
+                    <span>Settings</span>
+                </a>
+            </div>
+        </section>
+    </main>
+</div>
+{% endblock %}

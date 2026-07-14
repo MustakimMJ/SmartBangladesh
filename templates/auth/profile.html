@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}User Profile - Smart Bangladesh{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <h3>{{ user_role.replace('_', ' ').title() if user_role else 'Account' }} Portal</h3>
+            <ul>
+                {% if user_role == 'citizen' %}
+                    <li><a href="{{ url_for('citizen.dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ url_for('citizen.applications') }}">My Applications</a></li>
+                {% elif user_role == 'police' %}
+                    <li><a href="{{ url_for('police.dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ url_for('police.applications') }}">Clearance Applications</a></li>
+                {% elif user_role == 'hospital' %}
+                    <li><a href="{{ url_for('hospital.dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ url_for('hospital.appointments') }}">Appointments</a></li>
+                {% elif user_role == 'city_corp' %}
+                    <li><a href="{{ url_for('city_corp.dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ url_for('city_corp.applications') }}">Applications</a></li>
+                {% elif user_role == 'blood_bank' %}
+                    <li><a href="{{ url_for('blood_bank.dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ url_for('blood_bank.requests') }}">Blood Requests</a></li>
+                {% elif user_role in ['admin', 'superadmin'] %}
+                    <li><a href="{{ url_for('admin.dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ url_for('admin.users') }}">Users</a></li>
+                    <li><a href="{{ url_for('admin.complaints') }}">Complaints</a></li>
+                    {% if user_role == 'superadmin' %}
+                        <li><a href="{{ url_for('admin.audit_logs') }}">Audit Logs</a></li>
+                    {% endif %}
+                {% endif %}
+                <li><a href="{{ url_for('auth.profile') }}" class="active">Profile</a></li>
+                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="dashboard-content">
+        <h1>User Profile</h1>
+
+        <div class="recent-section">
+            <h2>Profile Information</h2>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                <div>
+                    <label style="font-weight: 600; color: var(--primary);">Name</label>
+                    <p>{{ user.name }}</p>
+                </div>
+                <div>
+                    <label style="font-weight: 600; color: var(--primary);">Email</label>
+                    <p>{{ user.email }}</p>
+                </div>
+                <div>
+                    <label style="font-weight: 600; color: var(--primary);">Phone</label>
+                    <p>{{ user.phone }}</p>
+                </div>
+                <div>
+                    <label style="font-weight: 600; color: var(--primary);">NID</label>
+                    <p>{{ user.nid }}</p>
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <label style="font-weight: 600; color: var(--primary);">Address</label>
+                    <p>{{ user.address }}</p>
+                </div>
+            </div>
+
+            <h2 style="margin-top: 2rem;">Edit Profile</h2>
+            <form method="POST" action="{{ url_for('auth.edit_profile') }}" class="auth-form">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" value="{{ user.name }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" value="{{ user.phone }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <textarea id="address" name="address" rows="3">{{ user.address }}</textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Update Profile</button>
+            </form>
+
+            <h2 style="margin-top: 2rem;">Change Password</h2>
+            <form method="POST" action="{{ url_for('auth.change_password') }}" class="auth-form">
+                <div class="form-group">
+                    <label for="old_password">Current Password</label>
+                    <input type="password" id="old_password" name="old_password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="new_password">New Password</label>
+                    <input type="password" id="new_password" name="new_password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password">Confirm New Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Change Password</button>
+            </form>
+        </div>
+    </main>
+</div>
+{% endblock %}

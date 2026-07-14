@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Application Details - Smart Bangladesh{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <h3>Navigation</h3>
+            <ul>
+                <li><a href="{{ url_for('citizen.dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('citizen.applications') }}" class="active">My Applications</a></li>
+                <li><a href="{{ url_for('citizen.apply_service', service_type='birth_certificate') }}">Birth Certificate</a></li>
+                <li><a href="{{ url_for('auth.profile') }}">Profile</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="dashboard-content">
+        <h1>Application Details</h1>
+
+        <div class="recent-section">
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                <div>
+                    <label style="font-weight: 600; color: var(--primary);">Application ID</label>
+                    <p>#{{ application.id }}</p>
+                </div>
+                <div>
+                    <label style="font-weight: 600; color: var(--primary);">Service Type</label>
+                    <p>{{ application.service_type.replace('_', ' ').title() }}</p>
+                </div>
+                <div>
+                    <label style="font-weight: 600; color: var(--primary);">Status</label>
+                    <p><span class="badge badge-{{ application.status }}">{{ application.status.title() }}</span></p>
+                </div>
+                <div>
+                    <label style="font-weight: 600; color: var(--primary);">Submitted Date</label>
+                    <p>{{ application.created_at.strftime('%d %B %Y, %I:%M %p') if application.created_at else 'N/A' }}</p>
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <label style="font-weight: 600; color: var(--primary);">Request Details</label>
+                    <p>{{ application.description }}</p>
+                </div>
+                {% if application.remarks %}
+                    <div style="grid-column: 1 / -1;">
+                        <label style="font-weight: 600; color: var(--primary);">Remarks</label>
+                        <p>{{ application.remarks }}</p>
+                    </div>
+                {% endif %}
+                {% if application.document_path %}
+                    <div style="grid-column: 1 / -1;">
+                        <label style="font-weight: 600; color: var(--primary);">Attached Document</label>
+                        <p>
+                            <a href="{{ url_for('citizen.download_document', app_id=application.id) }}" class="btn btn-small">Download</a>
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                <a href="{{ url_for('citizen.applications') }}" class="btn btn-outline">Back to Applications</a>
+                {% if application.status == 'approved' and application.service_type in ['birth_certificate', 'death_certificate', 'family_certificate', 'police_clearance'] %}
+                    <a href="{{ url_for('certificate.view_certificate', app_id=application.id) }}" class="btn btn-primary">View Certificate</a>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

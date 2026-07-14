@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Clearance Applications - Smart Bangladesh{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <h3>Police Portal</h3>
+            <ul>
+                <li><a href="{{ url_for('police.dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('police.applications') }}" class="active">Clearance Applications</a></li>
+                <li><a href="{{ url_for('auth.profile') }}">Profile</a></li>
+                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="dashboard-content">
+        <h1>Police Clearance Applications</h1>
+
+        <div class="recent-section">
+            {% if paginated.records %}
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Applicant</th>
+                            <th>Status</th>
+                            <th>Submitted</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in paginated.records %}
+                            <tr>
+                                <td>#{{ app.id }}</td>
+                                <td>App {{ app.user_id }}</td>
+                                <td><span class="badge badge-{{ app.status }}">{{ app.status.title() }}</span></td>
+                                <td>{{ app.created_at.strftime('%d %b %Y') if app.created_at else 'N/A' }}</td>
+                                <td><a href="{{ url_for('police.view_application', app_id=app.id) }}" class="btn btn-small">View</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="empty-state">No applications found</p>
+            {% endif %}
+        </div>
+    </main>
+</div>
+{% endblock %}
